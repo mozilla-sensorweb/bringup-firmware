@@ -1,0 +1,1 @@
+"./DELAY.obj" "./HDC1080.obj" "./PPD42NJ.obj" "./TLC59116.obj" "./gpio_if.obj" "./i2c_if.obj" "./main.obj" "./pinmux.obj" "./startup_ccs.obj" "./timer_if.obj" "../cc3200v1p32.cmd" -llibc.a -ldriverlib.a 
