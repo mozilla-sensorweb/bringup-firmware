@@ -22,7 +22,7 @@ static unsigned char bLocalPPD42NJ_DataAvailable;
 //*****************************************************************************
 //                      Global Variables for Vector Table
 //*****************************************************************************
-#if defined(ccs)
+#if defined(ccs) || defined(gcc)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -45,7 +45,7 @@ static void BoardInit(void)
   //
   // Set vector table base
   //
-#if defined(ccs)
+#if defined(ccs) || defined(gcc)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)
@@ -273,7 +273,20 @@ void main(void)
             return;
             }
 
-	      UART_PRINT("Temperature %.2f Humidity %.2f P1_Total %.2f P2_Total %.2f, Timestamp %ld", dTemperature, dHumidity, dPPD42NJ_P1Accumulative, dPPD42NJ_P2Accumulative, ulLocalPPD42NJ_TimeStamp);
+         #if 0
+         // Not sure why, but vsnprintf doesn't seem to be dealing with %f properly
+	      UART_PRINT("Temperature %.2f Humidity %.2f P1_Total %.2f P2_Total %.2f, Timestamp %ld\n\r", dTemperature, dHumidity, dPPD42NJ_P1Accumulative, dPPD42NJ_P2Accumulative, ulLocalPPD42NJ_TimeStamp);
+         #else
+         {
+            int temp = dTemperature * 100.0;
+            int humidity = dHumidity * 100.0;
+            int accum1 = dPPD42NJ_P1Accumulative * 100.0;
+            int accum2 = dPPD42NJ_P2Accumulative * 100.0;
+            UART_PRINT("Temperature %d.%02d Humidity %d.%02d P1_Total %d.%02d P2_Total %d.%02d, Timestamp %ld\n\r",
+                       temp / 100, temp % 100, humidity / 100, humidity % 100,
+                       accum1 / 100, accum1 % 100, accum2 / 100, accum2 % 100, ulLocalPPD42NJ_TimeStamp);
+         }
+         #endif
 
          bLocalPPD42NJ_DataAvailable = FALSE;
          }
